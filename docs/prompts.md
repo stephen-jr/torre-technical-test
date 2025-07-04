@@ -214,3 +214,19 @@ I keep getting this deployment error on Vercel:
 Error: The following Serverless Functions contain an invalid "runtime":
   - _render (nodejs18.x)
 
+15. ** Vercel Deployment Error Affecting component **
+Tool: Gemini, ChatGPT, Bolt.new
+Model: Gemini Flash, Default Model
+Prompt:
+```markdown
+Fix Type '{ children: Element; class: string; }' is not assignable to type 'DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>'.
+  Property 'class' does not exist on type 'DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>'. Did you mean 'className'?ts(2322)
+
+16. ** Vercel Deployment Error Affecting component 2 **
+Tool: Gemini, ChatGPT, Bolt.new, Github Copilot
+Model: Gemini Flash, Default Model
+Prompt:
+```markdown
+Fix Type '{ "client:load": true; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'client:load' does not exist on type 'IntrinsicAttributes'.
+
