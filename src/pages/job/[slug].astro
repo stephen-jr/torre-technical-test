@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import OpportunityDetailsPage from '../../components/Job';
+import Job from '../../components/Job';
 import { Toaster } from '@/components/ui/toaster';
 import '@/styles/globals.css';
 
@@ -9,7 +9,7 @@ const { slug } = Astro.params;
 
 <Layout title="Sarah Chen - Profile | TalentHub">
   <main class="min-h-screen bg-gray-50">
-    <OpportunityDetailsPage client:load slug={slug} />
+    <Job client:load slug={slug} />
     <Toaster client:load />
   </main>
 </Layout>

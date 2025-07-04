@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, MapPin, Clock, DollarSign, ArrowLeft, Building, CheckCircle, Heart, Share2 } from 'lucide-react';
+import { Search, MapPin, Clock, DollarSign, ArrowLeft, Building, CheckCircle, Heart, Share2, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -160,11 +160,20 @@ export default function OpportunitiesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
+      <div className="flex items-center justify-between mb-6">
         <Button variant="outline" className="flex items-center space-x-2" onClick={() => window.history.back()}>
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Search</span>
         </Button>
+        {/* TalentHub Logo */}
+        <div className="flex items-center space-x-2">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
+            <Building2 className="h-6 w-6 text-white" />
+          </div>
+          <div className="text-xl font-bold text-gray-900">
+            Talent<span className="text-blue-600">Hub</span>
+          </div>
+        </div>
       </div>
 
       <div className="mb-8">
@@ -320,20 +329,22 @@ export default function OpportunitiesPage() {
                     </div>
                     {job.members && job.members.length > 0 && (
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-2">Members</h3>
+                        <h3 className="font-semibold text-gray-900 mb-2">Top Members</h3>
                         <div className="flex flex-col gap-2">
-                          {job.members.map((member: { subjectId: string; picture?: string; name: string; professionalHeadline?: string }) => (
-                            <div key={member.subjectId} className="flex items-center gap-2">
-                              {member.picture && (
-                                <Avatar className="h-8 w-8">
-                                  <AvatarImage src={member.picture} alt={member.name} />
-                                  <AvatarFallback>{member.name?.[0] ?? ''}</AvatarFallback>
-                                </Avatar>
-                              )}
-                              <span className="font-medium">{member.name}</span>
-                              <span className="text-xs text-gray-500">{member.professionalHeadline}</span>
-                            </div>
-                          ))}
+                          {job.members.slice(0, 5).map(
+                            (member: { subjectId: string; picture?: string; name: string; professionalHeadline?: string }) => (
+                              <div key={member.subjectId} className="flex items-center gap-2">
+                                {member.picture && (
+                                  <Avatar className="h-8 w-8">
+                                    <AvatarImage src={member.picture} alt={member.name} />
+                                    <AvatarFallback>{member.name?.[0] ?? ''}</AvatarFallback>
+                                  </Avatar>
+                                )}
+                                <span className="font-medium">{member.name}</span>
+                                <span className="text-xs text-gray-500">{member.professionalHeadline}</span>
+                              </div>
+                            )
+                          )}
                         </div>
                       </div>
                     )}

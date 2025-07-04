@@ -1,106 +1,122 @@
-import { useState } from 'react';
-import { ArrowLeft, MapPin, Clock, DollarSign, Building, CheckCircle, Heart, Share2, Users, Calendar, Globe, Award, Star, Building2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, MapPin, Clock, DollarSign, Building, CheckCircle, Heart, Share2, Users, Globe, Award, Star, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { set } from 'date-fns';
+
+interface Organization {
+  id: number;
+  hashedId: string;
+  name: string;
+  status: string;
+  size: number;
+  publicId: string;
+  picture: string;
+  theme: string;
+}
+
+interface Skill {
+  name: string;
+  experience: string;
+  proficiency: string;
+}
+
+interface Member {
+  subjectId: string;
+  name: string;
+  username: string;
+  professionalHeadline: string;
+  theme: string | null;
+  picture: string | null;
+  member: boolean;
+  manager: boolean;
+  poster: boolean;
+  weight: number;
+}
+
+interface Place {
+  remote: boolean;
+  anywhere: boolean;
+  timezone: boolean | null;
+  location: string[];
+}
+
+interface CompensationData {
+  code: string;
+  currency: string;
+  minAmount: number;
+  minHourlyUSD: number;
+  maxAmount: number;
+  maxHourlyUSD: number;
+  periodicity: string;
+  negotiable: boolean;
+}
+
+interface Compensation {
+  data: CompensationData;
+  visible: boolean;
+}
+
+interface MetaScorer {
+  score: number;
+}
+
+interface Meta {
+  scorer?: MetaScorer;
+}
+
+export interface TorreJob {
+  id: string;
+  objective: string;
+  slug: string;
+  tagline: string;
+  theme: string;
+  type: string;
+  opportunity: string;
+  organizations: Organization[];
+  locations: string[];
+  timezones: string[] | null;
+  remote: boolean;
+  external: boolean;
+  deadline: string;
+  created: string;
+  status: string;
+  commitment: string;
+  compensation: Compensation;
+  skills: Skill[];
+  members: Member[];
+  place: Place;
+  questions: any[];
+  context: any;
+  additionalCompensation: any[];
+  additionalCompensationDetails: any;
+  _meta?: Meta;
+  videoUrl?: string | null;
+  serviceTypes?: string[];
+  quickApply?: boolean;
+}
 
 interface Job {
   slug: string;
 }
 
-const opportunityData = {
-  id: 1,
-  title: "Senior Frontend Developer",
-  company: "InnovateAI",
-  logo: "https://images.pexels.com/photos/7092611/pexels-photo-7092611.jpeg?auto=compress&cs=tinysrgb&w=120",
-  tagline: "Build the future of AI-powered applications that transform businesses",
-  description: "We're looking for a talented Senior Frontend Developer to join our growing team and help build cutting-edge AI applications. You'll work on revolutionary products that will transform how businesses operate and make decisions in the digital age.",
-  location: "San Francisco, CA",
-  type: "Full-time",
-  remote: "Hybrid (3 days in office)",
-  salary: "$120,000 - $150,000",
-  posted: "2 days ago",
-  applicants: 47,
-  benefits: [
-    "Comprehensive Health Insurance (Medical, Dental, Vision)",
-    "401(k) with 6% company match",
-    "Unlimited PTO policy",
-    "Remote work flexibility",
-    "$3,000 annual learning budget",
-    "Stock options with high growth potential",
-    "Free gym membership and wellness programs",
-    "Catered lunch 3x per week",
-    "Top-tier equipment (MacBook Pro, monitors)",
-    "Quarterly team retreats"
-  ],
-  uniquePerks: [
-    "AI research collaboration opportunities",
-    "Conference speaking opportunities",
-    "Open source contribution time (20%)",
-    "Innovation lab access"
-  ],
-  requiredSkills: [
-    { category: "Frontend Frameworks", skills: ["React", "Next.js", "Vue.js"], level: "Advanced", required: true },
-    { category: "Programming Languages", skills: ["TypeScript", "JavaScript ES6+"], level: "Expert", required: true },
-    { category: "Styling & Design", skills: ["Tailwind CSS", "Styled Components", "CSS3"], level: "Advanced", required: true },
-    { category: "State Management", skills: ["Redux", "Zustand", "Context API"], level: "Intermediate", required: true },
-    { category: "Testing", skills: ["Jest", "React Testing Library", "Cypress"], level: "Intermediate", required: true }
-  ],
-  preferredSkills: [
-    { category: "Backend Technologies", skills: ["Node.js", "GraphQL", "REST APIs"], level: "Intermediate", required: false },
-    { category: "Cloud & DevOps", skills: ["AWS", "Docker", "CI/CD"], level: "Beginner", required: false },
-    { category: "AI/ML Integration", skills: ["TensorFlow.js", "OpenAI API"], level: "Beginner", required: false },
-    { category: "Mobile Development", skills: ["React Native", "Progressive Web Apps"], level: "Intermediate", required: false }
-  ],
-  experience: {
-    years: "5+ years",
-    details: "Minimum 5 years of professional frontend development experience with modern frameworks"
-  },
-  responsibilities: [
-    "Lead frontend architecture decisions for AI-powered applications",
-    "Collaborate with AI/ML engineers to integrate complex algorithms into user interfaces",
-    "Mentor junior developers and conduct code reviews",
-    "Optimize application performance and user experience",
-    "Work closely with design team to implement pixel-perfect interfaces"
-  ],
-  companyInfo: {
-    size: "50-100 employees",
-    founded: "2019",
-    funding: "Series B",
-    industry: "Artificial Intelligence"
-  }
-};
-
-const platformLogos = [
-  { name: "React", icon: "⚛️" },
-  { name: "TypeScript", icon: "🔷" },
-  { name: "Next.js", icon: "▲" },
-  { name: "Tailwind", icon: "🎨" },
-  { name: "AWS", icon: "☁️" },
-  { name: "Docker", icon: "🐳" }
-];
-
-export default function OpportunityDetailsPage({ slug }: Job) {
-  const [isApplying, setIsApplying] = useState(false);
+export default function Job({ slug }: Job) {
   const [isSaved, setIsSaved] = useState(false);
+  const [job, setJob] = useState<TorreJob | any>({});
   const { toast } = useToast();
 
-  const handleApply = () => {
-    setIsApplying(true);
-    
-    setTimeout(() => {
-      setIsApplying(false);
-      toast({
-        title: "Application Submitted!",
-        description: `Your application for ${opportunityData.title} at ${opportunityData.company} has been sent successfully.`,
-        variant: "default",
-        duration: 6000,
-      });
-    }, 2000);
-  };
+
+  useEffect(() => {
+    const savedJob = localStorage.getItem(`jobs`);
+    if (savedJob) {
+      const parsedJob = JSON.parse(savedJob);
+      setJob(parsedJob.find((j: any) => j.id === slug));
+    }
+  }, []);
 
   const handleSave = () => {
     setIsSaved(!isSaved);
@@ -123,13 +139,69 @@ export default function OpportunityDetailsPage({ slug }: Job) {
 
   const getLevelColor = (level: string) => {
     switch (level.toLowerCase()) {
-      case 'beginner': return 'bg-green-100 text-green-800 border-green-200';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'advanced': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'no-experience-interested': return 'bg-green-100 text-green-800 border-green-200';
+      case 'novice': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'proficient': return 'bg-orange-100 text-orange-800 border-orange-200';
       case 'expert': return 'bg-red-100 text-red-800 border-red-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+
+  const formatProficiency = (proficiency: string) => {
+    switch (proficiency.toLowerCase()) {
+      case 'no-experience-interested': return 'No Experience (Interested)';
+      case 'novice': return 'Novice';
+      case 'proficient': return 'Proficient';
+      case 'expert': return 'Expert';
+      default: return 'Unknown';
+    }
+  }
+
+  const formatType = (type: string) => { 
+    switch (type) {
+      case 'full-time-employment': return 'Full-Time';
+      case 'flexible-jobs': return 'Flexible';
+      case 'internships': return 'Internship';
+      default: return 'Unknown';
+    }
+  }
+
+  // Helper to format salary range
+  const formatSalary = (comp?: any) => {
+    if (!comp?.visible || !comp.data) return 'Not Disclosed';
+    const { code, currency, minAmount, maxAmount, periodicity, negotiable } = comp.data;
+    switch (code) {
+      case 'to-be-agreed':
+          return 'To Be Agreed';
+      break;
+      default:
+        let range = `${currency} $${minAmount?.toString()} - $${maxAmount?.toString()} / ${periodicity}`;
+        if (negotiable) range += ' (Negotiable)';
+        return range;
+      break;
+    }
+  };
+
+  // Helper to get company info
+  const getCompany = (job: any) => job.organizations?.[0] || {};
+
+  // Helper to get match score
+  const getMatchScore = (job: any) =>
+    Math.round((job._meta?.scorer?.score ?? 0) * 100);
+
+  // Render message if job is not loaded or not found
+  if (!job || !job.id) {
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">Job details not available</h2>
+            <p className="text-gray-500">The job you are looking for could not be found.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const company = getCompany(job);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -139,8 +211,6 @@ export default function OpportunityDetailsPage({ slug }: Job) {
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Opportunities</span>
         </Button>
-        
-        {/* TalentHub Logo */}
         <div className="flex items-center space-x-2">
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
             <Building2 className="h-6 w-6 text-white" />
@@ -158,25 +228,28 @@ export default function OpportunityDetailsPage({ slug }: Job) {
             <div className="flex-1">
               <div className="flex items-start gap-6 mb-6">
                 <Avatar className="h-[120px] w-[120px] rounded-xl">
-                  <AvatarImage src={opportunityData.logo} alt={opportunityData.company} className="object-cover" />
-                  <AvatarFallback className="text-2xl font-bold">{opportunityData.company[0]}</AvatarFallback>
+                  <AvatarImage src={company.picture} alt={company.name} className="object-cover" />
+                  <AvatarFallback className="text-2xl font-bold">{company.name?.[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <h1 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontSize: '24px' }}>
-                    {opportunityData.title}
+                    {job.objective}
                   </h1>
                   <div className="flex items-center space-x-2 mb-3">
                     <Building className="h-5 w-5 text-gray-500" />
-                    <span className="text-lg font-semibold text-gray-700">{opportunityData.company}</span>
-                    <Badge variant="outline" className="ml-2">
-                      {opportunityData.companyInfo.industry}
-                    </Badge>
+                    <span className="text-lg font-semibold text-gray-700">{company.name}</span>
+                    {company.theme && (
+                      <Badge variant="outline" className="ml-2 capitalize">
+                        {formatType(job.type)}
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-blue-600 font-medium italic mb-4 text-lg">
-                    {opportunityData.tagline}
+                    {job.tagline}
                   </p>
                   <p className="text-gray-700 leading-relaxed">
-                    {opportunityData.description}
+                    {/* No explicit description, so show tagline or fallback */}
+                    {job.tagline}
                   </p>
                 </div>
               </div>
@@ -184,32 +257,31 @@ export default function OpportunityDetailsPage({ slug }: Job) {
               <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6">
                 <div className="flex items-center space-x-2">
                   <MapPin className="h-4 w-4" />
-                  <span>{opportunityData.location}</span>
+                  <span>{job.place?.remote || job.remote ? 'Remote' : (job.place?.location?.[0] || 'On-site')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Globe className="h-4 w-4" />
-                  <span>{opportunityData.remote}</span>
+                  <span>{job.place?.anywhere ? 'Anywhere' : ''}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Clock className="h-4 w-4" />
-                  <span>Posted {opportunityData.posted}</span>
+                  <span>Posted {job.created ? new Date(job.created).toLocaleDateString() : 'N/A'}</span>
                 </div>
+                {job.deadline && (
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4" />
+                    <span>Apply by {new Date(job.deadline).toLocaleDateString()}</span>
+                  </div>
+                )}
                 <div className="flex items-center space-x-2">
                   <Users className="h-4 w-4" />
-                  <span>{opportunityData.applicants} applicants</span>
+                  <span>{company.size ? `${company.size} employees` : ''}</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col space-y-3 lg:min-w-[200px]">
-              <Button 
-                onClick={handleApply}
-                disabled={isApplying}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3"
-              >
-                {isApplying ? 'Applying...' : 'Apply Now'}
-              </Button>
-              <div className="flex space-x-2">
+            <div className="flex flex-col space-y-3">
+              <div className="flex gap-4">
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -241,33 +313,45 @@ export default function OpportunityDetailsPage({ slug }: Job) {
             <CardContent className="space-y-6">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <h3 className="font-semibold text-green-800 mb-2">Salary Range</h3>
-                <p className="text-2xl font-bold text-green-900">{opportunityData.salary}</p>
-                <p className="text-sm text-green-700">Plus equity and performance bonuses</p>
+                <p className="text-2xl font-bold text-green-900">{formatSalary(job.compensation)}</p>
+                {job.compensation?.data?.negotiable && (
+                  <p className="text-sm text-green-700">Salary negotiable</p>
+                )}
               </div>
-
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3">Core Benefits</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {opportunityData.benefits.map((benefit, index) => (
-                    <div key={index} className="flex items-start space-x-2">
+                  {job.remote && (
+                    <div className="flex items-start space-x-2">
                       <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">{benefit}</span>
+                      <span className="text-sm text-gray-700">Remote</span>
                     </div>
-                  ))}
+                  )}
+                  {job.type && (
+                    <div className="flex items-start space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm text-gray-700">{formatType(job.type)}</span>
+                    </div>
+                  )}
+                  {job.opportunity && (
+                    <div className="flex items-start space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm text-gray-700">{job.opportunity.charAt(0).toUpperCase() + job.opportunity.slice(1)}</span>
+                    </div>
+                  )}
+                  {/* Add more if job.additionalCompensation */}
                 </div>
               </div>
-
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Unique Perks</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {opportunityData.uniquePerks.map((perk, index) => (
-                    <div key={index} className="flex items-start space-x-2">
-                      <Star className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">{perk}</span>
-                    </div>
-                  ))}
+              {job.additionalCompensation && job.additionalCompensation.length > 0 && (
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-3">Additional Compensation</h3>
+                  <ul>
+                    {job.additionalCompensation.map((item: any, idx: number) => (
+                      <li key={idx} className="text-sm text-gray-700 capitalize">{item.toString()}</li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
@@ -280,86 +364,21 @@ export default function OpportunityDetailsPage({ slug }: Job) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-800 mb-2">Experience Required</h3>
-                <p className="text-blue-900 font-medium">{opportunityData.experience.years}</p>
-                <p className="text-sm text-blue-700">{opportunityData.experience.details}</p>
-              </div>
-
               <div>
                 <h3 className="font-semibold text-gray-900 mb-4">Required Skills</h3>
                 <div className="space-y-4">
-                  {opportunityData.requiredSkills.map((skillGroup, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="font-medium text-gray-900">
-                          {skillGroup.category}
-                        </div>
-                        <div className="md:col-span-1">
-                          <div className="flex flex-wrap gap-1">
-                            {skillGroup.skills.map((skill) => (
-                              <Badge key={skill} variant="secondary" className="text-xs">
-                                {skill}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="flex justify-end">
-                          <Badge className={`text-xs ${getLevelColor(skillGroup.level)}`}>
-                            {skillGroup.level}
-                          </Badge>
-                        </div>
+                  {job.skills && job.skills.length > 0 ? (
+                    job.skills.map((skill: any, idx: number) => (
+                      <div key={idx} className="flex items-center justify-between border border-gray-200 rounded-lg p-3">
+                        <span className="font-medium text-gray-900">{skill.name}</span>
+                        <Badge className={`text-xs capitalize ${getLevelColor(skill.proficiency)}`}>{formatProficiency(skill.proficiency)}</Badge>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <span className="text-sm text-gray-500">No skills listed</span>
+                  )}
                 </div>
               </div>
-
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-4">Preferred Skills (Nice to Have)</h3>
-                <div className="space-y-4">
-                  {opportunityData.preferredSkills.map((skillGroup, index) => (
-                    <div key={index} className="border border-gray-100 rounded-lg p-4 bg-gray-50">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="font-medium text-gray-700">
-                          {skillGroup.category}
-                        </div>
-                        <div className="md:col-span-1">
-                          <div className="flex flex-wrap gap-1">
-                            {skillGroup.skills.map((skill) => (
-                              <Badge key={skill} variant="outline" className="text-xs">
-                                {skill}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="flex justify-end">
-                          <Badge variant="outline" className={`text-xs ${getLevelColor(skillGroup.level)}`}>
-                            {skillGroup.level}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Key Responsibilities */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Key Responsibilities</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3">
-                {opportunityData.responsibilities.map((responsibility, index) => (
-                  <li key={index} className="flex items-start space-x-3">
-                    <CheckCircle className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">{responsibility}</span>
-                  </li>
-                ))}
-              </ul>
             </CardContent>
           </Card>
         </div>
@@ -369,25 +388,13 @@ export default function OpportunityDetailsPage({ slug }: Job) {
           {/* Company Info */}
           <Card>
             <CardHeader>
-              <CardTitle>About {opportunityData.company}</CardTitle>
+              <CardTitle>About {company.name}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Company Size</span>
-                  <span className="text-sm font-medium">{opportunityData.companyInfo.size}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Founded</span>
-                  <span className="text-sm font-medium">{opportunityData.companyInfo.founded}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Funding Stage</span>
-                  <span className="text-sm font-medium">{opportunityData.companyInfo.funding}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Industry</span>
-                  <span className="text-sm font-medium">{opportunityData.companyInfo.industry}</span>
+                  <span className="text-sm font-medium">{company.size || 'N/A'}</span>
                 </div>
               </div>
             </CardContent>
@@ -396,53 +403,63 @@ export default function OpportunityDetailsPage({ slug }: Job) {
           {/* Application Stats */}
           <Card>
             <CardHeader>
-              <CardTitle>Application Insights</CardTitle>
+              <CardTitle>Insights</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm text-gray-600">Your Match Score</span>
-                    <span className="text-sm font-medium">95%</span>
+                    <span className="text-sm font-medium">{getMatchScore(job)}%</span>
                   </div>
-                  <Progress value={95} className="h-2" />
+                  <Progress value={getMatchScore(job)} className="h-2" />
                 </div>
                 <div className="text-xs text-gray-500">
-                  Based on your skills and experience
+                  Based on current user skills and experience
                 </div>
               </div>
-              
               <div className="border-t pt-4">
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-gray-600">Applications</span>
-                  <span className="text-sm font-medium">{opportunityData.applicants}</span>
+                  <span className="text-sm text-gray-600">Status</span>
+                  <span className="text-sm font-medium capitalize">{job.status}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Posted</span>
-                  <span className="text-sm font-medium">{opportunityData.posted}</span>
+                  <span className="text-sm font-medium">{job.created ? new Date(job.created).toLocaleDateString() : 'N/A'}</span>
                 </div>
+                {job.deadline && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Deadline</span>
+                    <span className="text-sm font-medium">{new Date(job.deadline).toLocaleDateString()}</span>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
-
-          {/* Tech Stack */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Tech Stack</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                {platformLogos.map((platform, index) => (
-                  <div key={index} className="flex flex-col items-center space-y-2 p-3 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                    <div className="text-2xl">{platform.icon}</div>
-                    <span className="text-xs font-medium text-gray-700">{platform.name}</span>
+          {/* Members/Contacts */}
+          {job.members && job.members.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Contacts</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {job.members.map((member: any) => (
+                  <div key={member.subjectId} className="flex items-center gap-2">
+                    {member.picture && (
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={member.picture} alt={member.name} />
+                        <AvatarFallback>{member.name[0]}</AvatarFallback>
+                      </Avatar>
+                    )}
+                    <span className="font-medium">{member.name}</span>
+                    <span className="text-xs text-gray-500">{member.professionalHeadline}</span>
                   </div>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
+        </div>
         </div>
       </div>
-    </div>
   );
 }

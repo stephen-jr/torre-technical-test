@@ -138,3 +138,11 @@ Prompt:
 ```markdown
 Search for the possibility of accessing a null value and indicate
 ```
+9. ** Opportunities Detail Component**
+Tool: Github Copilot
+Model: GPT-4.1
+File: src/components/Job.tsx
+Prompt:
+```markdown
+Update the component to used the data format to create the details element. Maintain design language and asthetics
+```
