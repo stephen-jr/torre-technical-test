@@ -26,5 +26,6 @@ pnpm-debug.log*
 .bolt/
 .vscode/
 .idx/
+.vercel
 
 docs/json/
