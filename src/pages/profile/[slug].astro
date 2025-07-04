@@ -1,0 +1,13 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProfilePage from '../../components/ProfilePage.tsx';
+import '@/styles/globals.css';
+
+const { slug } = Astro.params;
+---
+
+<Layout title="Sarah Chen - Profile | TalentHub">
+  <main class="min-h-screen bg-gray-50">
+    <ProfilePage client:load slug={slug} />
+  </main>
+</Layout>

@@ -6,6 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 
+interface ProfilePageProps {
+  slug: string;
+}
+
 const profileData = {
   name: "Sarah Chen",
   title: "Senior Frontend Developer",
@@ -101,7 +105,9 @@ const profileData = {
   ]
 };
 
-export default function ProfilePage() {
+export default function ProfilePage({slug}: ProfilePageProps) {
+  const [profile, setProfile] = useState(profileData);
+  console.log(`Profile slug: ${slug}`); // For debugging purposes
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">

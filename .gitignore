@@ -24,6 +24,6 @@ pnpm-debug.log*
 .idea/
 
 .bolt/
-.astro/
+.vscode/
 
 docs/json/
