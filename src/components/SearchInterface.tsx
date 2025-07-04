@@ -93,13 +93,9 @@ export default function SearchInterface() {
 
       {/* Featured Companies */}
       <div className="mt-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-1000 delay-500">
-        <h3 className="text-lg font-semibold text-gray-900 mb-8">Trusted by leading companies</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-8">Powered & Sponsored by </h3>
         <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-          <div className="text-2xl font-bold text-gray-400">TechCorp</div>
-          <div className="text-2xl font-bold text-gray-400">InnovateAI</div>
-          <div className="text-2xl font-bold text-gray-400">CloudFirst</div>
-          <div className="text-2xl font-bold text-gray-400">DataFlow</div>
-          <div className="text-2xl font-bold text-gray-400">StartupX</div>
+          <div className="text-2xl font-bold text-gray-400">torre.ai</div>
         </div>
       </div>
     </div>
