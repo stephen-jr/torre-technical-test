@@ -146,3 +146,71 @@ Prompt:
 ```markdown
 Update the component to used the data format to create the details element. Maintain design language and asthetics
 ```
+10. ** Job Members**
+Tool: Github Copilot
+Model: GPT-4.1
+File: src/components/Job.tsx
+Prompt:
+```markdown
+List to top five members of the job, with their name and headline. Use the data format to create the details element.
+```
+11. View Charts Button
+Tool: Github Copilot
+Model: GPT-4.1
+File: src/components/Opportunity.tsx
+Prompt:
+```markdown
+Add a link to this component styled as a button. The link should be at the end of the container
+```
+12. ** Build Errors **
+Tool: Gemini
+Model: Gemini Flash
+Prompt:
+```markdown
+Explain how to fix this build error:
+12:53:44 [ERROR] [vite] x Build failed in 316ms
+[vite]: Rollup failed to resolve import "sharp" from "D:/Code/torre-technical-test/node_modules/astro/dist/assets/services/sharp.js".
+This is most likely unintended because it can break your application at runtime.
+If you do want to externalize this module explicitly add it to
+`build.rollupOptions.external`
+  Stack trace:
+    at viteWarn (file:///D:/Code/torre-technical-test/node_modules/vite/dist/node/chunks/dep-CDnG8rE7.js:65532:17)
+    at onRollupWarning (file:///D:/Code/torre-technical-test/node_modules/vite/dist/node/chunks/dep-CDnG8rE7.js:65562:5)
+    at file:///D:/Code/torre-technical-test/node_modules/rollup/dist/es/shared/node-entry.js:19393:13
+    at ModuleLoader.handleInvalidResolvedId (file:///D:/Code/torre-technical-test/node_modules/rollup/dist/es/shared/node-entry.js:20008:26)
+    at async file:///D:/Code/torre-technical-test/node_modules/rollup/dist/es/shared/node-entry.js:19954:32
+
+```
+13. ** Build Error 2**
+Tool: Gemini, ChatGPT
+Model: Gemini Flash, Default Model
+Prompt:
+```markdown
+How do I resolve this build error?
+13:00:14 [ERROR] [vite] x Build failed in 329ms
+[vite]: Rollup failed to resolve import "sharp" from "D:/Code/torre-technical-test/node_modules/astro/dist/assets/services/sharp.js".
+This is most likely unintended because it can break your application at runtime.
+If you do want to externalize this module explicitly add it to
+`build.rollupOptions.external`
+  Stack trace:
+    at viteWarn (file:///D:/Code/torre-technical-test/node_modules/vite/dist/node/chunks/dep-CDnG8rE7.js:65532:17)
+    at onRollupWarning (file:///D:/Code/torre-technical-test/node_modules/vite/dist/node/chunks/dep-CDnG8rE7.js:65562:5)
+    at file:///D:/Code/torre-technical-test/node_modules/rollup/dist/es/shared/node-entry.js:19393:13
+    at ModuleLoader.handleInvalidResolvedId (file:///D:/Code/torre-technical-test/node_modules/rollup/dist/es/shared/node-entry.js:20008:26)
+    at async file:///D:/Code/torre-technical-test/node_modules/rollup/dist/es/shared/node-entry.js:19954:32
+
+```
+14. ** Vercel Deployment Error**
+Tool: Gemini, ChatGPT
+Model: Gemini Flash, Default Model
+Prompt:
+```markdown
+I keep getting this deployment error on Vercel:
+2025-07-04T12:02:56.551Z  Running build in Washington, D.C., USA (East) – iad1
+2025-07-04T12:02:56.552Z  Build machine configuration: 2 cores, 8 GB
+2025-07-04T12:02:56.600Z  Retrieving list of deployment files...
+2025-07-04T12:02:56.793Z  Previous build caches not available
+2025-07-04T12:02:57.112Z  Downloading 434 deployment files...
+Error: The following Serverless Functions contain an invalid "runtime":
+  - _render (nodejs18.x)
+

@@ -4,7 +4,9 @@ import react from '@astrojs/react';
 
 import tailwind from '@astrojs/tailwind';
 
-import vercel from '@astrojs/vercel/serverless';
+// import vercel from '@astrojs/vercel/serverless';
+
+import netlify from '@astrojs/netlify';
 
 // https://astro.build/config
 export default defineConfig({
@@ -26,7 +28,9 @@ export default defineConfig({
         },
       },
     },
+     ssr: {
+      external: ['sharp']
+    },
   },
-
-  adapter: vercel(),
+  adapter: netlify(),
 });
