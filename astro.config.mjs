@@ -13,4 +13,15 @@ export default defineConfig({
       applyBaseStyles: false,
     }),
   ],
+  vite: {
+    server: {
+      proxy: {
+        '/api/torre': {
+          target: 'https://torre.ai',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/torre/, ''),
+        },
+      },
+    },
+  },
 });

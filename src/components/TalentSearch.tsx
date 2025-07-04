@@ -123,7 +123,7 @@ export default function TalentSearch() {
         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
         <Input
           placeholder="Search for talent by name, role, or location..."
-          className="pl-12 pr-4 py-6 text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500 transition-colors"
+          className="pl-12 pr-4 py-6 text-lg rounded-xl border-2 border-gray-200 transition-colors"
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);

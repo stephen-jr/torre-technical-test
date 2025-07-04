@@ -99,3 +99,42 @@ Prompt:
 /fix Type '{ "client:load": true; slug: string; }' is not assignable to type 'IntrinsicAttributes'.
 Property 'slug' does not exist on type 'IntrinsicAttributes'.
 ```
+
+5. **Profile Page Fetch**
+Tool: Github Copilot
+Model: GPT-4.1
+Prompt:
+```markdown
+Implement a fetch function in the ProfilePage component that initializes the page using the dynamic slug value passed as a prop. Use this slug to retrieve data from an API endpoint whose response format is defined in profile.json. Once the data is fetched, update the component to render all relevant information based on the response structure.
+Additionally, identify and suggest any missing or necessary HTML elements (e.g. headings, images, social links, sections) that should be included in the component to properly display all important data fields returned in profile.json. Ensure the layout remains clean, accessible, and responsive.
+```
+6. ** Opportunities Matching**
+Tool: Github Copilot
+Model: GPT-4.1
+```markdown
+* Replace the hardcoded job card fields with dynamic values from the job object, matching the keys from opportunity.json.
+* Map all relevant fields: title/objective, company, logo, tagline, type, compensation, skills, requirements, match %, posted date, remote, etc.
+* Add missing HTML elements for:
+  * Members (showing at least the main poster's name and headline)
+  * Opportunity type (employee/contractor)
+  * Compensation periodicity and negotiable status
+  * Deadline (application deadline)
+  * Service types (if relevant)
+  * Video URL (if present)
+* Use fallback values or placeholders where data may be missing.
+```
+7. ** Update Matched Search **
+Tool: Github Copilot
+Model: GPT-4.1
+File: src/components/OpportunitiesPage.tsx
+Prompt:
+```markdown
+
+8. ** Null Value Error on OpportunitiesPage**
+Tool: Github Copilot
+Model: GPT-4.1
+File: src/components/OpportunitiesPage.tsx
+Prompt:
+```markdown
+Search for the possibility of accessing a null value and indicate
+```

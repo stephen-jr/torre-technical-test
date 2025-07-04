@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { MapPin, Calendar, Mail, Phone, Globe, CheckCircle, ArrowLeft, ExternalLink, Award, Users } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MapPin, Mail, Phone, Globe, CheckCircle, ArrowLeft, ExternalLink, Award, Users, BookOpen, GraduationCap, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,104 +10,63 @@ interface ProfilePageProps {
   slug: string;
 }
 
-const profileData = {
-  name: "Sarah Chen",
-  title: "Senior Frontend Developer",
-  location: "San Francisco, CA",
-  email: "sarah.chen@email.com",
-  phone: "+1 (555) 123-4567",
-  website: "sarahchen.dev",
-  verified: true,
-  profileImage: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600",
-  bio: "Passionate frontend developer with 5+ years of experience building scalable web applications. Specialized in React, TypeScript, and modern web technologies.",
-  skills: [
-    { name: "React", level: 95 },
-    { name: "TypeScript", level: 90 },
-    { name: "Next.js", level: 85 },
-    { name: "Tailwind CSS", level: 88 },
-    { name: "Node.js", level: 75 },
-    { name: "GraphQL", level: 80 }
-  ],
-  experience: [
-    {
-      company: "TechCorp",
-      position: "Senior Frontend Developer",
-      period: "2022 - Present",
-      description: "Led frontend development for enterprise SaaS platform, improving performance by 40% and user engagement by 25%."
-    },
-    {
-      company: "StartupX",
-      position: "Frontend Developer",
-      period: "2020 - 2022",
-      description: "Built responsive web applications using React and Redux, collaborated with design team on user experience improvements."
-    },
-    {
-      company: "Digital Agency",
-      position: "Junior Developer",
-      period: "2019 - 2020",
-      description: "Developed client websites using HTML, CSS, and JavaScript. Gained experience in modern web development practices."
-    }
-  ],
-  projects: [
-    {
-      title: "E-commerce Platform",
-      description: "Built a full-stack e-commerce solution with React and Node.js, handling 10k+ daily users.",
-      technologies: ["React", "Node.js", "MongoDB", "Stripe"],
-      link: "https://project1.com"
-    },
-    {
-      title: "Task Management App",
-      description: "Developed a collaborative task management application with real-time updates and team features.",
-      technologies: ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
-      link: "https://project2.com"
-    },
-    {
-      title: "Analytics Dashboard",
-      description: "Created an interactive analytics dashboard with custom visualizations and data insights.",
-      technologies: ["React", "D3.js", "Python", "FastAPI"],
-      link: "https://project3.com"
-    }
-  ],
-  recommendations: [
-    {
-      name: "John Smith",
-      position: "Engineering Manager at TechCorp",
-      text: "Sarah is an exceptional developer who consistently delivers high-quality work. Her attention to detail and collaborative approach make her a valuable team member."
-    },
-    {
-      name: "Lisa Wang",
-      position: "Product Designer at StartupX",
-      text: "Working with Sarah was a pleasure. She brings technical expertise and creative problem-solving to every project. Highly recommend!"
-    }
-  ],
-  jobMatches: [
-    {
-      title: "Senior React Developer",
-      company: "InnovateAI",
-      location: "San Francisco, CA",
-      salary: "$120k - $150k",
-      match: 95
-    },
-    {
-      title: "Frontend Tech Lead",
-      company: "CloudFirst",
-      location: "Remote",
-      salary: "$130k - $160k",
-      match: 90
-    },
-    {
-      title: "Full Stack Engineer",
-      company: "DataFlow",
-      location: "San Francisco, CA",
-      salary: "$115k - $140k",
-      match: 85
-    }
-  ]
-};
+async function fetchProfileBySlug(slug: string) {
+  const response = await fetch(`/api/torre/api/genome/bios/${slug}`);
+  if (!response.ok) throw new Error('Profile not found');
+  return await response.json();
+}
 
-export default function ProfilePage({slug}: ProfilePageProps) {
-  const [profile, setProfile] = useState(profileData);
-  console.log(`Profile slug: ${slug}`); // For debugging purposes
+export default function ProfilePage({ slug }: ProfilePageProps) {
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [showAllSkills, setShowAllSkills] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchProfileBySlug(slug)
+      .then(setProfile)
+      .catch(() => setProfile(null))
+      .finally(() => setLoading(false));
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-16">
+        <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-2"></span>
+        <span className="text-gray-500">Loading profile...</span>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex flex-col items-center py-16">
+        <span className="text-2xl text-gray-400 mb-4">Profile not found</span>
+        <Button variant="outline" onClick={() => window.history.back()}>Back to Search</Button>
+      </div>
+    );
+  }
+
+  // Helper functions for mapping API data
+  const person = profile.person || {};
+  const strengths = profile.strengths || [];
+  const jobs = (profile.jobs || []).sort((a, b) => (b.rank ?? 0) - (a.rank ?? 0));
+  const projects = (profile.projects || []).sort((a, b) => (b.rank ?? 0) - (a.rank ?? 0));
+  const publications = profile.publications || [];
+  const education = profile.education || [];
+  const links = person.links || [];
+  const languages = profile.languages || [];
+  const location = person.location?.shortName || person.location?.name || '';
+  const picture = person.picture || person.pictureThumbnail;
+  const name = person.name || '';
+  const headline = person.professionalHeadline || '';
+  const summary = person.summaryOfBio || '';
+  const verified = person.verified;
+  const email = person.email || '';
+  const phone = person.phone || '';
+  const website = links.find((l: any) => l.name === 'website')?.address || '';
+  const socialLinks = links.filter((l: any) => l.name !== 'website');
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
@@ -125,184 +84,275 @@ export default function ProfilePage({slug}: ProfilePageProps) {
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src={profileData.profileImage} alt={profileData.name} />
-                  <AvatarFallback>{profileData.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  <AvatarImage src={picture} alt={name} />
+                  <AvatarFallback>{name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
-                    <h1 className="text-2xl font-bold text-gray-900">{profileData.name}</h1>
-                    {profileData.verified && (
+                    <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
+                    {verified && (
                       <CheckCircle className="h-5 w-5 text-blue-500" />
                     )}
                   </div>
-                  <p className="text-lg text-gray-600 mb-4">{profileData.title}</p>
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                    <div className="flex items-center space-x-1">
-                      <MapPin className="h-4 w-4" />
-                      <span>{profileData.location}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Mail className="h-4 w-4" />
-                      <span>{profileData.email}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Globe className="h-4 w-4" />
-                      <span>{profileData.website}</span>
-                    </div>
+                  <p className="text-lg text-gray-600 mb-2">{headline}</p>
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-2">
+                    {location && (
+                      <div className="flex items-center space-x-1">
+                        <MapPin className="h-4 w-4" />
+                        <span>{location}</span>
+                      </div>
+                    )}
+                    {email && (
+                      <div className="flex items-center space-x-1">
+                        <Mail className="h-4 w-4" />
+                        <span>{email}</span>
+                      </div>
+                    )}
+                    {phone && (
+                      <div className="flex items-center space-x-1">
+                        <Phone className="h-4 w-4" />
+                        <span>{phone}</span>
+                      </div>
+                    )}
+                    {website && (
+                      <div className="flex items-center space-x-1">
+                        <Globe className="h-4 w-4" />
+                        <a href={website} target="_blank" rel="noopener noreferrer" className="hover:underline">{website}</a>
+                      </div>
+                    )}
                   </div>
-                </div>
-                <div className="flex space-x-2">
-                  <Button>Connect</Button>
-                  <Button variant="outline">Message</Button>
+                  {/* Social Links */}
+                  {socialLinks.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {socialLinks.map((link: any) => (
+                        <a
+                          key={link.id}
+                          href={link.address}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center space-x-1 text-blue-600 hover:underline text-sm"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          <span>{link.name}</span>
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Bio */}
-          <Card>
-            <CardHeader>
-              <CardTitle>About</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-700 leading-relaxed">{profileData.bio}</p>
-            </CardContent>
-          </Card>
+          {/* About / Summary */}
+          {summary && (
+            <Card>
+              <CardHeader>
+                <CardTitle>About</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700 leading-relaxed">{summary}</p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Skills */}
-          <Card>
-            <CardHeader>
+            {strengths.length > 0 && (
+            <Card>
+              <CardHeader>
               <CardTitle>Skills</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {profileData.skills.map((skill) => (
-                <div key={skill.name} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-gray-700">{skill.name}</span>
-                    <span className="text-sm text-gray-500">{skill.level}%</span>
-                  </div>
-                  <Progress value={skill.level} className="h-2" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+              {strengths.slice(0, strengths.length > 10 && !showAllSkills ? 10 : strengths.length).map((skill: any) => (
+                <div key={skill.id} className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-gray-700">{skill.name}</span>
+                  <span className="text-sm text-gray-500">{skill.proficiency}</span>
+                </div>
+                {(skill.proficiency === 'expert' || skill.proficiency === 'proficient') && (
+                  <Progress value={skill.proficiency === 'expert' ? 100 : 80} className="h-2" />
+                )}
                 </div>
               ))}
-            </CardContent>
-          </Card>
-
-          {/* Experience */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Award className="h-5 w-5" />
-                <span>Experience</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {profileData.experience.map((exp, index) => (
-                <div key={index} className="relative pl-6 border-l-2 border-gray-200 last:border-l-0">
-                  <div className="absolute -left-2 top-0 h-4 w-4 bg-blue-500 rounded-full"></div>
-                  <div className="space-y-2">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                      <h3 className="font-semibold text-gray-900">{exp.position}</h3>
-                      <span className="text-sm text-gray-500">{exp.period}</span>
-                    </div>
-                    <p className="font-medium text-gray-700">{exp.company}</p>
-                    <p className="text-gray-600">{exp.description}</p>
-                  </div>
+              {strengths.length > 10 && (
+                <div className="flex justify-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAllSkills((prev: boolean) => !prev)}
+                >
+                  {showAllSkills ? 'View Less' : 'View More'}
+                </Button>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
+              )}
+              </CardContent>
+            </Card>
+            )}
 
-          {/* Projects */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Featured Projects</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
-                {profileData.projects.map((project, index) => (
-                  <div key={index} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900">{project.title}</h3>
-                      <ExternalLink className="h-4 w-4 text-gray-400 hover:text-blue-500 cursor-pointer" />
-                    </div>
-                    <p className="text-gray-600 mb-3">{project.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.technologies.map((tech) => (
-                        <Badge key={tech} variant="secondary" className="text-xs">
-                          {tech}
-                        </Badge>
-                      ))}
+          {/* Experience / Jobs */}
+          {jobs.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Award className="h-5 w-5" />
+                  <span>Experience</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {jobs.map((job: any, index: number) => (
+                  <div key={job.id || index} className="relative pl-6 border-l-2 border-gray-200 last:border-l-0">
+                    <div className="absolute -left-2 top-0 h-4 w-4 bg-blue-500 rounded-full"></div>
+                    <div className="space-y-2">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <h3 className="font-semibold text-gray-900">{job.name}</h3>
+                        <span className="text-sm text-gray-500">
+                          {job.fromMonth} {job.fromYear}
+                          {job.toMonth && job.toYear ? ` - ${job.toMonth} ${job.toYear}` : ''}
+                        </span>
+                      </div>
+                      <p className="font-medium text-gray-700">{job.organizations?.map((org: any) => org.name).join(', ')}</p>
+                      <p className="text-gray-600 whitespace-pre-line">{job.additionalInfo}</p>
                     </div>
                   </div>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Recommendations */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="h-5 w-5" />
-                <span>Recommendations</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {profileData.recommendations.map((rec, index) => (
-                <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                  <p className="text-gray-700 mb-3 italic">"{rec.text}"</p>
-                  <div className="text-sm">
-                    <p className="font-medium text-gray-900">{rec.name}</p>
-                    <p className="text-gray-600">{rec.position}</p>
-                  </div>
+          {/* Projects */}
+          {projects.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Projects</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4">
+                  {projects.map((project: any, index: number) => (
+                    <div key={project.id || index} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="font-semibold text-gray-900">{project.name}</h3>
+                        {project.media && project.media.length > 0 && project.media[0].mediaItems && project.media[0].mediaItems[0]?.address && (
+                          <a href={project.media[0].mediaItems[0].address} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-4 w-4 text-gray-400 hover:text-blue-500 cursor-pointer" />
+                          </a>
+                        )}
+                      </div>
+                      <p className="text-gray-600 mb-3">{project.additionalInfo}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {project.organizations?.map((org: any) => (
+                          <Badge key={org.id} variant="secondary" className="text-xs">
+                            {org.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Publications */}
+          {publications.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <BookOpen className="h-5 w-5" />
+                  <span>Publications</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {publications.map((pub: any, idx: number) => (
+                    <div key={pub.id || idx} className="p-4 bg-gray-50 rounded-lg">
+                      <h3 className="font-semibold text-gray-900">{pub.name}</h3>
+                      <p className="text-gray-600 mb-2">{pub.additionalInfo}</p>
+                      {pub.media && pub.media.length > 0 && pub.media[0].mediaItems && pub.media[0].mediaItems[0]?.address && (
+                        <a href={pub.media[0].mediaItems[0].address} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center space-x-1">
+                          <ExternalLink className="h-4 w-4" />
+                          <span>View Publication</span>
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Education */}
+          {education.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <GraduationCap className="h-5 w-5" />
+                  <span>Education</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {education.map((edu: any, idx: number) => (
+                    <div key={edu.id || idx} className="p-4 bg-gray-50 rounded-lg">
+                      <h3 className="font-semibold text-gray-900">{edu.name}</h3>
+                      <p className="text-gray-600 mb-2">{edu.organizations?.map((org: any) => org.name).join(', ')}</p>
+                      <span className="text-sm text-gray-500">
+                        {edu.fromMonth} {edu.fromYear}
+                        {edu.toMonth && edu.toYear ? ` - ${edu.toMonth} ${edu.toYear}` : ''}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Languages */}
+          {languages.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Languages className="h-5 w-5" />
+                  <span>Languages</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {languages.map((lang: any, idx: number) => (
+                    <Badge key={lang.code || idx} variant="secondary" className="text-xs">
+                      {lang.language} ({lang.fluency})
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Job Matches */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Job Matches</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {profileData.jobMatches.map((job, index) => (
-                <div key={index} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-gray-900 text-sm">{job.title}</h3>
-                    <Badge variant="outline" className="text-xs">
-                      {job.match}% match
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-1">{job.company}</p>
-                  <p className="text-xs text-gray-500 mb-2">{job.location}</p>
-                  <p className="text-sm font-medium text-green-600">{job.salary}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
           {/* Contact Info */}
           <Card>
             <CardHeader>
               <CardTitle>Contact Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <Mail className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-700">{profileData.email}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-700">{profileData.phone}</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Globe className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-700">{profileData.website}</span>
-              </div>
+              {email && (
+                <div className="flex items-center space-x-3">
+                  <Mail className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-700">{email}</span>
+                </div>
+              )}
+              {phone && (
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-gray-700">{phone}</span>
+                </div>
+              )}
+              {website && (
+                <div className="flex items-center space-x-3">
+                  <Globe className="h-4 w-4 text-gray-500" />
+                  <a href={website} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-700 hover:underline">{website}</a>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
