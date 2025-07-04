@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SearchInterface from '../components/SearchInterface.tsx';
+import '@/styles/globals.css';
+---
+
+<Layout title="TalentHub - Find Your Next Opportunity">
+  <main class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <SearchInterface client:load />
+  </main>
+</Layout>
