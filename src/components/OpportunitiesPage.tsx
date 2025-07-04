@@ -176,10 +176,22 @@ export default function OpportunitiesPage() {
         </div>
       </div>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Job Opportunities</h1>
-        <p className="text-gray-600">Discover your next career opportunity</p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Job Opportunities</h1>
+          <p className="text-gray-600">Discover your next career opportunity</p>
+        </div>
+        {/* Link to this component */}
+        <div className="flex md:justify-end mt-4 md:mt-0">
+          <a
+            href="/chart"
+            className="inline-flex items-center px-6 py-2 bg-primary hover:bg-gray-700 text-white font-semibold rounded-md shadow transition-colors"
+          >
+          View Chart
+          </a>
+        </div>
       </div>
+
 
       {/* Search and Filter Bar */}
       <div className="flex flex-col md:flex-row gap-4 mb-8">
