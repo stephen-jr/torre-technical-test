@@ -6,103 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { set } from 'date-fns';
 
-interface Organization {
-  id: number;
-  hashedId: string;
-  name: string;
-  status: string;
-  size: number;
-  publicId: string;
-  picture: string;
-  theme: string;
-}
 
-interface Skill {
-  name: string;
-  experience: string;
-  proficiency: string;
-}
-
-interface Member {
-  subjectId: string;
-  name: string;
-  username: string;
-  professionalHeadline: string;
-  theme: string | null;
-  picture: string | null;
-  member: boolean;
-  manager: boolean;
-  poster: boolean;
-  weight: number;
-}
-
-interface Place {
-  remote: boolean;
-  anywhere: boolean;
-  timezone: boolean | null;
-  location: string[];
-}
-
-interface CompensationData {
-  code: string;
-  currency: string;
-  minAmount: number;
-  minHourlyUSD: number;
-  maxAmount: number;
-  maxHourlyUSD: number;
-  periodicity: string;
-  negotiable: boolean;
-}
-
-interface Compensation {
-  data: CompensationData;
-  visible: boolean;
-}
-
-interface MetaScorer {
-  score: number;
-}
-
-interface Meta {
-  scorer?: MetaScorer;
-}
-
-export interface TorreJob {
-  id: string;
-  objective: string;
-  slug: string;
-  tagline: string;
-  theme: string;
-  type: string;
-  opportunity: string;
-  organizations: Organization[];
-  locations: string[];
-  timezones: string[] | null;
-  remote: boolean;
-  external: boolean;
-  deadline: string;
-  created: string;
-  status: string;
-  commitment: string;
-  compensation: Compensation;
-  skills: Skill[];
-  members: Member[];
-  place: Place;
-  questions: any[];
-  context: any;
-  additionalCompensation: any[];
-  additionalCompensationDetails: any;
-  _meta?: Meta;
-  videoUrl?: string | null;
-  serviceTypes?: string[];
-  quickApply?: boolean;
-}
-
-interface Job {
-  slug: string;
-}
+import type { Job, TorreJob, Organization, Skill, Member, Place, CompensationData, Compensation, MetaScorer, Meta } from '@/components/interfaces/Job';
 
 export default function Job({ slug }: Job) {
   const [isSaved, setIsSaved] = useState(false);
@@ -369,9 +275,9 @@ export default function Job({ slug }: Job) {
                 <div className="space-y-4">
                   {job.skills && job.skills.length > 0 ? (
                     job.skills.map((skill: any, idx: number) => (
-                      <div key={idx} className="flex items-center justify-between border border-gray-200 rounded-lg p-3">
+                      <div key={idx} className="flex items-center justify-between border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition-colors">
                         <span className="font-medium text-gray-900">{skill.name}</span>
-                        <Badge className={`text-xs capitalize ${getLevelColor(skill.proficiency)}`}>{formatProficiency(skill.proficiency)}</Badge>
+                        <Badge className={`text-xs capitalize hover:text-white ${getLevelColor(skill.proficiency)}`}>{formatProficiency(skill.proficiency)}</Badge>
                       </div>
                     ))
                   ) : (
@@ -444,7 +350,7 @@ export default function Job({ slug }: Job) {
               </CardHeader>
               <CardContent className="space-y-2">
                 {job.members.map((member: any) => (
-                  <div key={member.subjectId} className="flex items-center gap-2">
+                  <div key={member.subjectId} className="flex items-center gap-2 my-3">
                     {member.picture && (
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={member.picture} alt={member.name} />

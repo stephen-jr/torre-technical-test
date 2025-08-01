@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Building2, Users, Briefcase, Search, Star } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TalentSearch from './TalentSearch';

@@ -1,4 +1,4 @@
-1. Implement pagination on the opportunities page
+1. Implement pagination on the opportunities page ✅
 2. Style the profile page for users having a lot of content
 3. Add Job Recommendation on User profile
 4. Add Similar Opportunities to Job Detail Page

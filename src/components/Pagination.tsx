@@ -1,12 +1,7 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  isLoading?: boolean;
-}
+import type { PaginationProps } from '@/components/interfaces/Pagination';
 
 function Pagination({ currentPage, totalPages, onPageChange, isLoading = false }: PaginationProps) {
   const getVisiblePages = () => {

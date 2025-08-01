@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 
+import type { Job, Project, Publication, Education, Link, Language, Strength, Person } from '@/components/interfaces/ProfilePage';
+import { ucwords } from '@/lib/fn';
+
 interface ProfilePageProps {
   slug: string;
 }
@@ -31,9 +34,11 @@ export default function ProfilePage({ slug }: ProfilePageProps) {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-16">
-        <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-2"></span>
-        <span className="text-gray-500">Loading profile...</span>
+      <div className="fixed inset-0 flex justify-center items-center bg-white bg-opacity-80 z-50">
+        <div className="flex flex-col items-center">
+          <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></span>
+          <span className="text-gray-500">Loading profile...</span>
+        </div>
       </div>
     );
   }
@@ -48,14 +53,14 @@ export default function ProfilePage({ slug }: ProfilePageProps) {
   }
 
   // Helper functions for mapping API data
-  const person = profile.person || {};
-  const strengths = profile.strengths || [];
-  const jobs = (profile.jobs || []).sort((a, b) => (b.rank ?? 0) - (a.rank ?? 0));
-  const projects = (profile.projects || []).sort((a, b) => (b.rank ?? 0) - (a.rank ?? 0));
-  const publications = profile.publications || [];
-  const education = profile.education || [];
-  const links = person.links || [];
-  const languages = profile.languages || [];
+  const person: Person = profile.person || {};
+  const strengths: Strength[] = profile.strengths || [];
+  const jobs: Job[] = (profile.jobs || []).sort((a: { rank: any; }, b: { rank: any; }) => (b.rank ?? 0) - (a.rank ?? 0));
+  const projects: Project[] = (profile.projects || []).sort((a: { rank: any; }, b: { rank: any; }) => (b.rank ?? 0) - (a.rank ?? 0));
+  const publications: Publication[] = profile.publications || [];
+  const education: Education[] = profile.education || [];
+  const links: Link[] = person.links || [];
+  const languages: Language[] = profile.languages || [];
   const location = person.location?.shortName || person.location?.name || '';
   const picture = person.picture || person.pictureThumbnail;
   const name = person.name || '';
@@ -85,7 +90,7 @@ export default function ProfilePage({ slug }: ProfilePageProps) {
               <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={picture} alt={name} />
-                  <AvatarFallback>{name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  <AvatarFallback>{name.split(' ').map((n: string) => n[0]).join('')}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
@@ -165,8 +170,8 @@ export default function ProfilePage({ slug }: ProfilePageProps) {
               {strengths.slice(0, strengths.length > 10 && !showAllSkills ? 10 : strengths.length).map((skill: any) => (
                 <div key={skill.id} className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-gray-700">{skill.name}</span>
-                  <span className="text-sm text-gray-500">{skill.proficiency}</span>
+                  <span className="font-medium text-gray-700">{ ucwords(skill.name) }</span>
+                  <span className="text-sm text-gray-500">{ ucwords(skill.proficiency) }</span>
                 </div>
                 {(skill.proficiency === 'expert' || skill.proficiency === 'proficient') && (
                   <Progress value={skill.proficiency === 'expert' ? 100 : 80} className="h-2" />

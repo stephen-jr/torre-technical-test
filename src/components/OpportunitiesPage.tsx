@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination } from '@/components/Pagination';
+import { ucfirst, ucwords } from '@/lib/fn';
 
 const ITEMS_PER_PAGE = 15;
 
@@ -81,7 +82,7 @@ export default function OpportunitiesPage() {
         job.organizations?.[0]?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (job.place?.location?.[0]?.id?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
         (job.tagline?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) ||
-        (job.skills?.some(skill => skill.name.toLowerCase().includes(searchTerm.toLowerCase())) ?? false);
+        (job.skills?.some((skill: { name: string }) => skill.name.toLowerCase().includes(searchTerm.toLowerCase())) ?? false);
 
       const matchesFilter = filterType === 'all' || job.type?.toLowerCase() === filterType.toLowerCase();
 
@@ -388,7 +389,7 @@ export default function OpportunitiesPage() {
                         {job.type && (
                           <li className="flex items-start space-x-2">
                             <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                            <span>{job.type.replace(/-/g, ' ')}</span>
+                            <span>{ucwords(job.type.replace(/-/g, ' '))}</span>
                           </li>
                         )}
                         {job.remote && (
@@ -400,7 +401,7 @@ export default function OpportunitiesPage() {
                         {job.opportunity && (
                           <li className="flex items-start space-x-2">
                             <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                            <span>{job.opportunity.charAt(0).toUpperCase() + job.opportunity.slice(1)} opportunity</span>
+                            <span>{ucfirst(job.opportunity)} Opportunity</span>
                           </li>
                         )}
                         {/* Fallback if no requirements */}
